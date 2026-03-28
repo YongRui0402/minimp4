@@ -93,6 +93,14 @@ See `docs/MAINTENANCE_PLAN.md` for the complete 4-phase maintenance plan.
 - [x] Step 5: Pre-commit hook script (`scripts/pre-commit`)
 - [x] Step 6: Release automation (`.github/workflows/release.yml`)
 
+**Phase 3: Upstream Issue & PR Review — IN PROGRESS**
+
+- [x] Step 1: Add upstream remote and fetch (we are 16 commits ahead, 0 behind)
+- [ ] Step 2: Catalog all issues/PRs into `docs/upstream-review.md`
+- [ ] Step 3: Review each item against acceptance criteria
+- [ ] Step 4: Cherry-pick accepted changes, add tests, merge via PR
+- [ ] Step 5: Comment on original repo issues pointing to our fixes
+
 ## Known Bugs (to fix during Phase 1)
 
 1. `minimp4_test.c:70` — read_callback underflow: `buf->size - offset - size`
