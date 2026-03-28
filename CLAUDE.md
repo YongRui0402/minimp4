@@ -81,7 +81,7 @@ See `docs/MAINTENANCE_PLAN.md` for the complete 4-phase maintenance plan.
 - [x] Step 7: Write `test_edge_cases.c` + `test_vector_util.c`
 - [x] Step 8: Add coverage reporting to CI (83.5% line coverage achieved)
 - [x] Step 9: Add fuzz targets (fuzz_demux + fuzz_mux_nal with libFuzzer)
-- [ ] Step 10: Generate HEVC test vectors + `test_hevc.c`
+- [x] Step 10: Generate HEVC test vectors + `test_hevc.c` (3 bugs fixed: SEI skip, hvcC demux, hvc1 sample entry)
 - [ ] Step 11: Remove `.travis.yml`
 
 **After each step**: update this checklist, ensure build + tests pass, then commit.

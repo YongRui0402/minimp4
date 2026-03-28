@@ -22,7 +22,7 @@ minimp4_add_test(test_vector_util)
 minimp4_add_test(test_bit_reader)
 minimp4_add_test(test_edge_cases)
 # minimp4_add_test(test_integration)
-# minimp4_add_test(test_hevc)
+minimp4_add_test(test_hevc)
 
 # Legacy integration tests using reference vectors
 add_test(NAME legacy_mux_default

@@ -2299,6 +2299,10 @@ static int mp4_h265_write_nal(mp4_h26x_writer_t *h, const unsigned char *nal, in
         MP4E_set_pps(h->mux, h->mux_track_id, nal, sizeof_nal);
         h->need_pps = 0;
         break;
+    case 35: // AUD
+    case 39: // SEI prefix
+    case 40: // SEI suffix
+        break;
     default:
         if (h->need_vps || h->need_sps || h->need_pps || h->need_idr)
             return MP4E_STATUS_BAD_ARGUMENTS;
@@ -3003,6 +3007,12 @@ broken_android_meta_hack:
 //         case BOX_avc2:   - no test
 //         case BOX_svc1:   - no test
         case BOX_mp4v:
+#endif
+#if MP4D_HEVC_SUPPORTED
+        case BOX_hev1:
+        case BOX_hvc1:  // HEVCSampleEntry extends VisualSampleEntry
+#endif
+#if MP4D_AVC_SUPPORTED || MP4D_HEVC_SUPPORTED
             if (!tr)
             {
                 ERROR("broken file structure!");
@@ -3070,6 +3080,20 @@ broken_android_meta_hack:
             }
             break;
 #endif  // MP4D_AVC_SUPPORTED
+
+#if MP4D_HEVC_SUPPORTED
+        case BOX_hvcC:  // HEVCDecoderConfigurationRecord()
+            tr->object_type_indication = MP4_OBJECT_TYPE_HEVC;
+            tr->dsi = (unsigned char*)malloc((size_t)payload_bytes);
+            tr->dsi_bytes = (unsigned)payload_bytes;
+            if (tr->dsi)
+            {
+                unsigned k;
+                for (k = 0; k < tr->dsi_bytes; k++)
+                    tr->dsi[k] = READ(1);
+            }
+            break;
+#endif  // MP4D_HEVC_SUPPORTED
 
         case OD_ESD:
             {
