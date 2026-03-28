@@ -1,0 +1,92 @@
+name: AI PR Review
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  ai-review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get PR diff
+        id: diff
+        run: |
+          git diff origin/${{ github.base_ref }}...HEAD > /tmp/pr.diff
+          echo "diff_size=$(wc -l < /tmp/pr.diff)" >> "$GITHUB_OUTPUT"
+
+      - name: AI Review Comment
+        if: steps.diff.outputs.diff_size > 0
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const diff = fs.readFileSync('/tmp/pr.diff', 'utf8');
+            const files = diff.match(/^diff --git a\/(.*) b\//gm) || [];
+            const changedFiles = files.map(f => f.replace(/^diff --git a\//, '').replace(/ b\/.*/, ''));
+
+            // Build checklist based on what was changed
+            let checks = [];
+
+            const touchesMinimp4 = changedFiles.some(f => f === 'minimp4.h');
+            const touchesTests = changedFiles.some(f => f.startsWith('tests/'));
+            const hasCMake = changedFiles.some(f => f.includes('CMakeLists'));
+            const hasNewDeps = diff.includes('#include <') && !diff.includes('#include <std');
+
+            checks.push(`- ${touchesTests || !touchesMinimp4 ? ':white_check_mark:' : ':warning:'} **Tests**: ${touchesTests ? 'Test files modified' : touchesMinimp4 ? 'minimp4.h changed but no test changes detected' : 'No library changes'}`);
+            checks.push(`- ${hasNewDeps ? ':x:' : ':white_check_mark:'} **Zero dependencies**: ${hasNewDeps ? 'New external #include detected — please verify' : 'No new external dependencies'}`);
+            checks.push(`- ${touchesMinimp4 ? ':eyes:' : ':white_check_mark:'} **Header-only**: ${touchesMinimp4 ? 'minimp4.h modified — review for API compatibility' : 'Library header unchanged'}`);
+
+            // Count additions/deletions
+            const additions = (diff.match(/^\+[^+]/gm) || []).length;
+            const deletions = (diff.match(/^-[^-]/gm) || []).length;
+
+            const body = [
+              '## :robot: AI Review Checklist',
+              '',
+              `**${changedFiles.length} file(s) changed** (+${additions} -${deletions})`,
+              '',
+              '### Project Philosophy Checks',
+              ...checks,
+              '',
+              '### Reminder',
+              '- [ ] All tests pass (`cmake -B build && cmake --build build && ctest --test-dir build`)',
+              '- [ ] Tests pass with ASan/UBSan (`cmake -B build -DMINIMP4_ENABLE_SANITIZERS=ON`)',
+              '- [ ] Changes follow code style (C99, 4-space indent, snake_case, MP4E_/MP4D_ prefix)',
+              '- [ ] No unnecessary features added (minimal philosophy)',
+              '',
+              '*This is an automated review checklist. Human review is still required.*',
+            ].join('\n');
+
+            // Check if we already posted a review comment
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            const botComment = comments.data.find(c =>
+              c.user.type === 'Bot' && c.body.includes('AI Review Checklist')
+            );
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: body,
+              });
+            }
