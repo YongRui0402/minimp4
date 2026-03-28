@@ -87,3 +87,20 @@ add_test(NAME legacy_demux_slices_verify
     COMMAND ${CMAKE_COMMAND} -E compare_files ${CMAKE_BINARY_DIR}/out_demux_slices.h264 vectors/foreman_slices.264
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 set_tests_properties(legacy_demux_slices_verify PROPERTIES DEPENDS legacy_demux_slices)
+
+# Fuzz targets (requires clang with libFuzzer)
+if(MINIMP4_ENABLE_FUZZING)
+    function(minimp4_add_fuzz_target name)
+        add_executable(${name} fuzz/${name}.c)
+        target_link_libraries(${name} PRIVATE minimp4)
+        target_compile_definitions(${name} PRIVATE _FILE_OFFSET_BITS=64)
+        target_compile_options(${name} PRIVATE -fsanitize=fuzzer,address -fno-omit-frame-pointer)
+        target_link_options(${name} PRIVATE -fsanitize=fuzzer,address)
+        if(UNIX)
+            target_link_libraries(${name} PRIVATE m)
+        endif()
+    endfunction()
+
+    minimp4_add_fuzz_target(fuzz_demux)
+    minimp4_add_fuzz_target(fuzz_mux_nal)
+endif()

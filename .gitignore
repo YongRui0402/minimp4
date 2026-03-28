@@ -7,3 +7,4 @@ qemu-prof
 *.gcov
 build/
 build-cov/
+build-fuzz/

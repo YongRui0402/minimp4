@@ -80,6 +80,26 @@ jobs:
             echo "::warning::Coverage ${COVERAGE}% is below 80% threshold"
           fi
 
+  fuzz:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build fuzz targets
+        run: |
+          CC=clang cmake -B build -DMINIMP4_ENABLE_FUZZING=ON
+          cmake --build build --target fuzz_demux --target fuzz_mux_nal
+
+      - name: Run fuzz_demux (60s)
+        run: |
+          mkdir -p corpus
+          timeout 60 ./build/tests/fuzz_demux corpus/ || true
+
+      - name: Run fuzz_mux_nal (60s)
+        run: |
+          mkdir -p corpus_nal
+          timeout 60 ./build/tests/fuzz_mux_nal corpus_nal/ || true
+
   legacy-tests:
     runs-on: ubuntu-latest
     steps:
