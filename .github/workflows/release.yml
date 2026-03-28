@@ -1,0 +1,87 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build and test
+        run: |
+          cmake -B build -DMINIMP4_ENABLE_SANITIZERS=ON
+          cmake --build build
+          ctest --test-dir build --output-on-failure
+
+      - name: Generate changelog
+        id: changelog
+        run: |
+          # Find previous tag
+          PREV_TAG=$(git tag --sort=-version:refname | sed -n '2p')
+          CURRENT_TAG=${GITHUB_REF#refs/tags/}
+
+          echo "current_tag=$CURRENT_TAG" >> "$GITHUB_OUTPUT"
+
+          if [ -z "$PREV_TAG" ]; then
+            echo "First release — no previous tag"
+            COMMITS=$(git log --pretty=format:"- %s" HEAD)
+          else
+            echo "Generating changelog from $PREV_TAG to $CURRENT_TAG"
+            COMMITS=$(git log --pretty=format:"- %s" "$PREV_TAG".."$CURRENT_TAG")
+          fi
+
+          # Categorize commits
+          FEATURES=$(echo "$COMMITS" | grep -iE "^- (add|new|feat)" || true)
+          FIXES=$(echo "$COMMITS" | grep -iE "^- (fix|bug|patch)" || true)
+          OTHER=$(echo "$COMMITS" | grep -viE "^- (add|new|feat|fix|bug|patch)" || true)
+
+          # Build release body
+          {
+            echo "body<<RELEASE_EOF"
+            echo "## What's Changed"
+            echo ""
+            if [ -n "$FEATURES" ]; then
+              echo "### New Features"
+              echo "$FEATURES"
+              echo ""
+            fi
+            if [ -n "$FIXES" ]; then
+              echo "### Bug Fixes"
+              echo "$FIXES"
+              echo ""
+            fi
+            if [ -n "$OTHER" ]; then
+              echo "### Other Changes"
+              echo "$OTHER"
+              echo ""
+            fi
+            echo "---"
+            echo ""
+            echo "**Full Changelog**: https://github.com/${{ github.repository }}/compare/${PREV_TAG:-initial}...$CURRENT_TAG"
+            echo "RELEASE_EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Create GitHub Release
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const tag = '${{ steps.changelog.outputs.current_tag }}';
+            const body = `${{ steps.changelog.outputs.body }}`;
+            await github.rest.repos.createRelease({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              tag_name: tag,
+              name: `minimp4 ${tag}`,
+              body: body,
+              draft: false,
+              prerelease: tag.includes('-'),
+            });
