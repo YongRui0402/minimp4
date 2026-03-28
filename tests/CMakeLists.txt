@@ -15,6 +15,7 @@ endfunction()
 # Tests will be added here as they are created:
 minimp4_add_test(test_mux_api)
 minimp4_add_test(test_demux_api)
+minimp4_add_test(test_integration)
 # minimp4_add_test(test_h26x_writer)
 # minimp4_add_test(test_nal_parsing)
 # minimp4_add_test(test_vector_util)
