@@ -84,7 +84,14 @@ See `docs/MAINTENANCE_PLAN.md` for the complete 4-phase maintenance plan.
 - [x] Step 10: Generate HEVC test vectors + `test_hevc.c` (3 bugs fixed: SEI skip, hvcC demux, hvc1 sample entry)
 - [x] Step 11: Remove `.travis.yml` (replaced by GitHub Actions CI)
 
-**After each step**: update this checklist, ensure build + tests pass, then commit.
+**Phase 2: AI Agent Semi-automated Management — NOT STARTED**
+
+- [x] Step 1: CLAUDE.md created (done in Phase 1 prerequisites)
+- [x] Step 2: .claude/settings.local.json configured (done in Phase 1 prerequisites)
+- [ ] Step 3: AI PR review GitHub Action (`.github/workflows/ai-review.yml`)
+- [ ] Step 4: AI Issue triage scheduled action
+- [ ] Step 5: Pre-commit hooks for code quality
+- [ ] Step 6: Release automation (tag → changelog → gh release)
 
 ## Known Bugs (to fix during Phase 1)
 
