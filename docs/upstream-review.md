@@ -10,7 +10,7 @@ Tracking document for reviewing issues and PRs from the original [lieff/minimp4]
 |---|-------|-------|----------|-----------|------------|
 | 45 | Fixed memory leak (missing free for vvps) | OPEN | already-fixed | We fixed this independently in Phase 1 Step 4 | - |
 | 46 | Clean up compiler warnings except fallthrough | OPEN | accept | Addresses #31, compiler warnings cleanup | applied |
-| 36 | Add an SLConfigDescriptor to the ES_Descriptor | OPEN | defer | Adds ~30 lines for AAC spec compliance, needs testing | evaluate |
+| 36 | Add an SLConfigDescriptor to the ES_Descriptor | OPEN | accept | Fixes #25 — Twitter/Firefox rejecting MP4 with audio | **applied** |
 | 35 | Add methods for manual flushing and changing write offset | OPEN | reject | Adds non-minimal API surface, breaks header-only simplicity | - |
 | 34 | Add function to find sync frames and store avc1 codec info | OPEN | defer | Large addition (~100+ lines), extends API beyond core mux/demux | evaluate |
 | 37 | integrated with mayhem | CLOSED | reject | CI integration for external fuzzing service, not relevant | - |
@@ -44,7 +44,7 @@ Tracking document for reviewing issues and PRs from the original [lieff/minimp4]
 | 30 | Cmd line bug, typos | CLOSED | already-included | Already in our codebase (commit 4575afb) | - |
 | 27 | Access Unit Delimiter (AUD) handling | CLOSED | already-included | Fixed in commit 2666e56 | - |
 | 26 | License / Patent ? | OPEN | skip | License question (CC0), not actionable | - |
-| 25 | Twitter rejects minimp4 files, possible fix | OPEN | accept | Compatibility fix, likely small change | evaluate |
+| 25 | Twitter rejects minimp4 files, possible fix | OPEN | accept | Fixed via PR #36 (SLConfigDescriptor) | **fixed** |
 | 24 | The program exits abnormally | CLOSED | skip | Resolved upstream | - |
 | 21 | Adjustable Memory Allocation Functions | OPEN | defer | Enhancement, would add API complexity | evaluate |
 | 20 | Question: support of MOV container | OPEN | skip | Feature request beyond scope | - |
