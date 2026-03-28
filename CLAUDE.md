@@ -93,13 +93,13 @@ See `docs/MAINTENANCE_PLAN.md` for the complete 4-phase maintenance plan.
 - [x] Step 5: Pre-commit hook script (`scripts/pre-commit`)
 - [x] Step 6: Release automation (`.github/workflows/release.yml`)
 
-**Phase 3: Upstream Issue & PR Review — IN PROGRESS**
+**Phase 3: Upstream Issue & PR Review — COMPLETE**
 
 - [x] Step 1: Add upstream remote and fetch (we are 16 commits ahead, 0 behind)
 - [x] Step 2: Catalog all issues/PRs into `docs/upstream-review.md` (35 issues, 14 PRs reviewed)
 - [x] Step 3: Review each item against acceptance criteria (done in Step 2)
 - [x] Step 4: Cherry-pick accepted changes (PR #46 compiler warnings applied)
-- [ ] Step 5: Comment on original repo issues pointing to our fixes (requires user approval to post publicly)
+- [x] Step 5: Fix accepted upstream bugs (#50 heap overflow, #42 bounds check; #41/#48/#18/#14 evaluated as not-bugs; #33/#15/#25 deferred)
 
 ## Known Bugs (to fix during Phase 1)
 

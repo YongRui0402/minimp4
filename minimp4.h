@@ -2802,7 +2802,11 @@ broken_android_meta_hack:
                 int size = 0;
                 uint32_t sample_size = READ(4);
                 tr->sample_count = READ(4);
-                MALLOC(unsigned int*, tr->entry_size, tr->sample_count*4);
+                if (tr->sample_count > (unsigned)payload_bytes && !sample_size)
+                {
+                    ERROR("invalid sample count");
+                }
+                MALLOC(unsigned int*, tr->entry_size, (size_t)tr->sample_count * sizeof(unsigned int));
                 for (i = 0; i < tr->sample_count; i++)
                 {
                     if (box_name == BOX_stsz)
@@ -2836,7 +2840,7 @@ broken_android_meta_hack:
 
         case BOX_stsc:  //ISO/IEC 14496-12 Page 38. Section 8.18 - Sample To Chunk Box.
             tr->sample_to_chunk_count = READ(4);
-            MALLOC(MP4D_sample_to_chunk_t*, tr->sample_to_chunk, tr->sample_to_chunk_count*sizeof(tr->sample_to_chunk[0]));
+            MALLOC(MP4D_sample_to_chunk_t*, tr->sample_to_chunk, (size_t)tr->sample_to_chunk_count * sizeof(tr->sample_to_chunk[0]));
             for (i = 0; i < tr->sample_to_chunk_count; i++)
             {
                 tr->sample_to_chunk[i].first_chunk = READ(4);
@@ -2850,8 +2854,8 @@ broken_android_meta_hack:
                 unsigned count = READ(4);
                 unsigned j, k = 0, ts = 0, ts_count = count;
 #if MP4D_TIMESTAMPS_SUPPORTED
-                MALLOC(unsigned int*, tr->timestamp, ts_count*4);
-                MALLOC(unsigned int*, tr->duration, ts_count*4);
+                MALLOC(unsigned int*, tr->timestamp, (size_t)ts_count * sizeof(unsigned int));
+                MALLOC(unsigned int*, tr->duration, (size_t)ts_count * sizeof(unsigned int));
 #endif
 
                 for (i = 0; i < count; i++)
@@ -2863,8 +2867,8 @@ broken_android_meta_hack:
                     if (k + sc > ts_count)
                     {
                         ts_count = k + sc;
-                        tr->timestamp = (unsigned int*)realloc(tr->timestamp, ts_count * sizeof(unsigned));
-                        tr->duration  = (unsigned int*)realloc(tr->duration,  ts_count * sizeof(unsigned));
+                        tr->timestamp = (unsigned int*)realloc(tr->timestamp, (size_t)ts_count * sizeof(unsigned));
+                        tr->duration  = (unsigned int*)realloc(tr->duration,  (size_t)ts_count * sizeof(unsigned));
                     }
                     for (j = 0; j < sc; j++)
                     {
@@ -2893,7 +2897,7 @@ broken_android_meta_hack:
         case BOX_stco:  //ISO/IEC 14496-12 Page 39. Section 8.19 - Chunk Offset Box.
         case BOX_co64:
             tr->chunk_count = READ(4);
-            MALLOC(MP4D_file_offset_t*, tr->chunk_offset, tr->chunk_count*sizeof(MP4D_file_offset_t));
+            MALLOC(MP4D_file_offset_t*, tr->chunk_offset, (size_t)tr->chunk_count * sizeof(MP4D_file_offset_t));
             for (i = 0; i < tr->chunk_count; i++)
             {
                 tr->chunk_offset[i] = READ(4);
@@ -3256,9 +3260,23 @@ static int sample_to_chunk(MP4D_track_t *tr, unsigned nsample, unsigned *nfirst_
 // Exported API function
 MP4D_file_offset_t MP4D_frame_offset(const MP4D_demux_t *mp4, unsigned ntrack, unsigned nsample, unsigned *frame_bytes, unsigned *timestamp, unsigned *duration)
 {
-    MP4D_track_t *tr = mp4->track + ntrack;
+    MP4D_track_t *tr;
     unsigned ns;
-    int nchunk = sample_to_chunk(tr, nsample, &ns);
+    int nchunk;
+
+    if (ntrack >= mp4->track_count)
+    {
+        *frame_bytes = 0;
+        return 0;
+    }
+    tr = mp4->track + ntrack;
+
+    if (nsample >= tr->sample_count)
+    {
+        *frame_bytes = 0;
+        return 0;
+    }
+    nchunk = sample_to_chunk(tr, nsample, &ns);
     MP4D_file_offset_t offset;
 
     if (nchunk < 0)

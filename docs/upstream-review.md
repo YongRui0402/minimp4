@@ -27,18 +27,18 @@ Tracking document for reviewing issues and PRs from the original [lieff/minimp4]
 
 | # | Title | State | Decision | Rationale | Our Action |
 |---|-------|-------|----------|-----------|------------|
-| 50 | Heap buffer overflow via integer overflow in stsz/stts malloc | OPEN | accept | Security bug (CWE-190/CWE-122), aligns with known bug #3 | fix |
+| 50 | Heap buffer overflow via integer overflow in stsz/stts malloc | OPEN | accept | Security bug (CWE-190/CWE-122), aligns with known bug #3 | **fixed** |
 | 49 | AV1 Support | OPEN | reject | Beyond core scope (H.264/H.265 mux/demux) | - |
-| 48 | minimp4 parses samplerate as 0 (32-bit audio format) | OPEN | accept | Real bug in audio track parsing | fix |
+| 48 | minimp4 parses samplerate as 0 (32-bit audio format) | OPEN | skip | Spec-compliant: ISO 14496-12 defines samplerate as 16.16 fixed-point | - |
 | 47 | 100 individual single-frame H264 files to fmp4 cannot play | OPEN | defer | Needs reproduction, unclear if library bug or usage issue | investigate |
 | 44 | build status is not available | OPEN | already-fixed | We replaced Travis CI with GitHub Actions | - |
 | 43 | Question about minimp4_test.c | OPEN | skip | Usage question, not a bug | - |
-| 42 | Illegal memory access after resetting to sample zero | OPEN | accept | Memory safety bug, bounds checking issue | fix |
-| 41 | Wrong track->handler_type for video track | OPEN | accept | Demuxer bug, incorrect handler type parsing | fix |
+| 42 | Illegal memory access after resetting to sample zero | OPEN | accept | Added bounds check in MP4D_frame_offset | **fixed** |
+| 41 | Wrong track->handler_type for video track | OPEN | skip | Not a bug — lib correctly reads 'alis' handler from file | - |
 | 40 | Consulting work | OPEN | skip | Not a bug/feature request | - |
 | 39 | can this lib use for fmp4 push to browser MSE? | CLOSED | skip | Usage question | - |
 | 38 | H265 to mp4 half video is gray image | OPEN | defer | May be related to our HEVC fixes, needs investigation | investigate |
-| 33 | Crash when parsing malformed 264 files | OPEN | accept | Robustness issue, fuzzer likely catches this | fix |
+| 33 | Crash when parsing malformed 264 files | OPEN | defer | Crash in SPS ID transcoder (patch_pps), needs significant bounds checking work | investigate |
 | 32 | Cannot demux MP4 files in H265 format | OPEN | already-fixed | We added hvcC demux handler in Phase 1 Step 10 | - |
 | 31 | Compilation Warnings with -Wall -Wextra | OPEN | accept | Code quality, related to PR #46 | fix |
 | 30 | Cmd line bug, typos | CLOSED | already-included | Already in our codebase (commit 4575afb) | - |
@@ -48,10 +48,10 @@ Tracking document for reviewing issues and PRs from the original [lieff/minimp4]
 | 24 | The program exits abnormally | CLOSED | skip | Resolved upstream | - |
 | 21 | Adjustable Memory Allocation Functions | OPEN | defer | Enhancement, would add API complexity | evaluate |
 | 20 | Question: support of MOV container | OPEN | skip | Feature request beyond scope | - |
-| 18 | a/v sync issue with fragmentation mode | OPEN | accept | Real bug in fMP4 mode | fix |
+| 18 | a/v sync issue with fragmentation mode | OPEN | skip | Usage issue with timestamp calculation, not a library bug | - |
 | 16 | all modes failed on certain bitstream | CLOSED | skip | Resolved upstream | - |
-| 15 | fragmentation mode + slices doesn't work | OPEN | accept | Real bug | fix |
-| 14 | sequential mode not seekable on windows | OPEN | accept | Platform compatibility bug | fix |
+| 15 | fragmentation mode + slices doesn't work | OPEN | defer | Needs specific test file to reproduce | investigate |
+| 14 | sequential mode not seekable on windows | OPEN | skip | Windows Media Player limitation, not a library bug | - |
 | 13 | fragmentation mode doesn't work with audio | CLOSED | skip | Resolved upstream | - |
 | 12 | add mp3/aac samples | OPEN | defer | Enhancement, needs audio test infrastructure | evaluate |
 | 11 | Can you provide the pcm file for test code? | CLOSED | skip | Question | - |
@@ -67,21 +67,25 @@ Tracking document for reviewing issues and PRs from the original [lieff/minimp4]
 
 | Decision | Count |
 |----------|-------|
-| accept (fix) | 9 |
+| fixed | 4 (#50, #42, #31/PR#46, PR#45/VPS leak) |
 | already-included/fixed | 11 |
-| defer (evaluate) | 6 |
+| defer (investigate) | 7 (#33, #36, #34, #15, #25, #21, #12) |
 | reject | 3 |
-| skip | 16 |
+| skip (not a bug / question / usage) | 20 |
 
-### Priority fixes (accept)
+### Fixed in our fork
 
-1. **#50** — Heap buffer overflow in stsz/stts (security, P0)
-2. **#42** — Illegal memory access after sample reset (P0)
-3. **#33** — Crash parsing malformed 264 files (P1)
-4. **#41** — Wrong handler_type for video track (P1)
-5. **#48** — Audio samplerate parsed as 0 (P1)
-6. **#31** — Compiler warnings + PR #46 (P2)
-7. **#25** — Twitter compatibility fix (P2)
-8. **#18** — A/V sync in fragmentation mode (P2)
-9. **#15** — Fragmentation + slices bug (P2)
-10. **#14** — Sequential mode not seekable on Windows (P2)
+1. **#50** — Heap buffer overflow in stsz/stts/stsc/stco: cast to `(size_t)` + sanity check
+2. **#42** — Bounds check added to `MP4D_frame_offset` for ntrack/nsample
+3. **#31 / PR #46** — Compiler warnings cleanup, dead code removal
+4. **PR #45** — VPS memory leak (independently fixed in Phase 1)
+
+### Deferred (needs further investigation)
+
+1. **#33** — Crash in SPS ID transcoder with malformed input (significant rework needed)
+2. **#15** — Fragmentation + slices (needs test file)
+3. **#25** — Twitter compatibility (needs investigation)
+4. **#36** — SLConfigDescriptor for AAC (spec compliance, needs testing)
+5. **#34** — Sync frame finding + avc1 codec info (large API addition)
+6. **#21** — Custom allocator support (API complexity)
+7. **#12** — MP3/AAC sample support (needs audio infrastructure)
