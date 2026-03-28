@@ -299,6 +299,122 @@ Step 5  ─── 在原始 repo 相關 issue 下留言指向我們的修復
 
 ---
 
+## Phase 4：社群建設與引流
+
+> 目標：建立專業的開源專案形象，吸引用戶從舊 repo 遷移。
+
+### 4.1 README 改版
+
+擴充現有 README（48 行），新結構：
+
+1. **標題 + 徽章** — CI status、Codecov、License badge
+2. **Fork 說明** — 明確表示這是 `lieff/minimp4` 的持續維護版本
+3. **功能列表** — H.264/H.265 mux/demux、AAC audio、fMP4、sequential mode
+4. **快速開始** — `#define MINIMP4_IMPLEMENTATION` + 基本使用範例
+5. **API 參考** — 所有公開函式的一行描述表格
+6. **構建與測試** — CMake 指令 + 舊腳本說明
+7. **Muxing 模式** — 保留現有三張模式圖
+8. **Contributing** — 連結到 CONTRIBUTING.md
+9. **License** — CC0
+
+### 4.2 CONTRIBUTING.md
+
+新增 `/CONTRIBUTING.md`：
+
+- Bug 回報流程（使用 issue template）
+- 程式碼提交流程（fork → branch → PR）
+- 程式碼風格指南（C99、4 空格、snake_case）
+- 測試要求（所有 PR 必須含測試，CI 必須通過）
+- 專案理念聲明（不接受違反核心理念的 PR）
+- 審查流程說明（AI 輔助 + 人工審查）
+
+### 4.3 GitHub Issue / PR 模板
+
+```
+.github/
+├── ISSUE_TEMPLATE/
+│   ├── bug_report.md           # 結構化 bug 報告模板
+│   └── feature_request.md      # 功能提案模板
+└── PULL_REQUEST_TEMPLATE.md    # PR 檢查清單
+```
+
+**Bug 報告模板包含：** 版本/commit hash、作業系統/編譯器、重現步驟、預期 vs 實際行為
+
+**PR 模板檢查清單：**
+- [ ] 已新增對應測試
+- [ ] CI 全部通過
+- [ ] 未引入外部依賴
+- [ ] 遵循程式碼風格
+- [ ] 更新了相關文件
+
+### 4.4 版本策略
+
+| 版本 | 里程碑 | 觸發條件 |
+|------|--------|---------|
+| `v0.1.0` | 程式碼基線 | Phase 1 開始前，繼承自 lieff/minimp4 |
+| `v0.2.0` | 測試基礎設施完成 | Phase 1 完成 |
+| `v0.3.0` | 上游整合完成 | Phase 3 完成 |
+| `v1.0.0` | 正式穩定版 | 所有已知 bug 修復 + HEVC 完善 |
+
+之後採用 [Semantic Versioning](https://semver.org/)：
+
+- **PATCH**（x.x.1）：bug fix、文件更新
+- **MINOR**（x.1.0）：新功能（不破壞 API）
+- **MAJOR**（1.0.0）：破壞性 API 變更
+
+### 4.5 引流策略
+
+#### 直接方式
+
+1. **在 lieff/minimp4 開 issue** — 禮貌宣佈維護 fork
+   - 附具體證據：CI 截圖、測試覆蓋率、已修復的 bug 列表
+   - 感謝原作者的工作
+2. **回覆原始 repo 的 open issues** — 標註「已在維護 fork 修復」並附連結
+3. **聯繫依賴專案** — 如 `darkskygit/minimp4.rs`，建議更新 upstream 指向
+4. **Package managers** — 若有 Conan/vcpkg 等套件，提交更新
+
+#### SEO / 可發現性
+
+1. **GitHub Topics**：`mp4`, `h264`, `h265`, `hevc`, `aac`, `muxer`, `demuxer`, `header-only`, `c-library`, `multimedia`
+2. **GitHub Description**：清晰描述，包含關鍵詞
+3. **GitHub Releases**：正式 release 提升搜尋排名
+4. **社群推廣**：
+   - Reddit r/programming、r/C_Programming
+   - Hacker News
+   - C 語言相關論壇/Discord
+
+### 4.6 執行順序
+
+```
+Step 1  ─── 更新 README.md
+Step 2  ─── 建立 CONTRIBUTING.md
+Step 3  ─── 建立 issue/PR templates
+Step 4  ─── 設定 GitHub topics 與 description
+Step 5  ─── 建立初始 release tag v0.1.0
+Step 6  ─── 在 lieff/minimp4 發布宣佈 issue
+Step 7  ─── 回覆原始 repo 相關 open issues
+Step 8  ─── 聯繫依賴專案維護者
+Step 9  ─── 社群推廣文章
+```
+
+---
+
+## 總體時程表
+
+```
+Week 1  ── Phase 1a ── CMake + test harness + GitHub Actions CI（基本）
+Week 2  ── Phase 1b ── test_mux_api + test_demux_api + test_integration
+Week 3  ── Phase 1c ── test_nal_parsing + test_bit_reader + test_edge_cases
+Week 4  ── Phase 1d ── Coverage + fuzz + HEVC vectors
+        ── Phase 4a ── README + CONTRIBUTING + templates + v0.1.0
+Week 5  ── Phase 2  ── CLAUDE.md + AI review + AI triage + release automation
+Week 6  ── Phase 3  ── Upstream review + cherry-pick + 測試
+Week 7  ── Phase 4b ── 宣佈 + 社群推廣 + v0.2.0
+Week 8+ ── 持續維護 ── Bug 修復、HEVC 改善、社群互動、定期 release
+```
+
+---
+
 ## 驗證方式
 
 ### Phase 1 驗證
@@ -332,4 +448,11 @@ lcov --capture --directory build-cov --output-file coverage.info
 - `docs/upstream-review.md` 所有 issue/PR 已審查
 - 每個接受的變更有對應測試
 - Cherry-pick 的 PR 通過 CI
+
+### Phase 4 驗證
+
+- README 包含所有預定章節
+- Issue/PR templates 可正常使用
+- `v0.1.0` release 已建立
+- lieff/minimp4 上的宣佈 issue 已發布
 - GitHub topics 已設定
