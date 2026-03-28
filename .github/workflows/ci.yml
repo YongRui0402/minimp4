@@ -1,0 +1,105 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  build-and-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        compiler: [gcc, clang]
+        include:
+          - os: windows-latest
+            compiler: msvc
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure (Unix)
+        if: matrix.os != 'windows-latest'
+        run: |
+          if [ "${{ matrix.compiler }}" = "clang" ]; then
+            export CC=clang
+          else
+            export CC=gcc
+          fi
+          cmake -B build -DMINIMP4_ENABLE_SANITIZERS=ON
+
+      - name: Configure (Windows)
+        if: matrix.os == 'windows-latest'
+        run: cmake -B build
+
+      - name: Build
+        run: cmake --build build --config Release
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure -C Release
+
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install lcov
+        run: sudo apt-get update && sudo apt-get install -y lcov
+
+      - name: Configure with coverage
+        run: cmake -B build -DMINIMP4_ENABLE_COVERAGE=ON
+
+      - name: Build
+        run: cmake --build build
+
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
+
+      - name: Generate coverage report
+        run: |
+          lcov --capture --directory build --output-file coverage.info
+          lcov --remove coverage.info '/usr/*' '*/tests/*' --output-file coverage.info
+          lcov --list coverage.info
+
+  legacy-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build x86
+        run: |
+          gcc -flto -O3 -std=gnu11 -DNDEBUG -D_FILE_OFFSET_BITS=64 \
+            -fno-stack-protector -ffunction-sections -fdata-sections -Wl,--gc-sections \
+            -o minimp4_x86 minimp4_test.c -lm -lpthread
+
+      - name: Run legacy tests
+        run: |
+          test_executable() {
+            EXEC=$1
+            $EXEC vectors/foreman.264 out.mp4
+            cmp ./out.mp4 vectors/out_ref.mp4
+            rm out.mp4
+            $EXEC -s vectors/foreman.264 out.mp4
+            cmp ./out.mp4 vectors/out_sequential_ref.mp4
+            rm out.mp4
+            $EXEC -f vectors/foreman.264 out.mp4
+            cmp ./out.mp4 vectors/out_fragmentation_ref.mp4
+            rm out.mp4
+            $EXEC vectors/foreman_slices.264 out.mp4
+            cmp ./out.mp4 vectors/out_slices_ref.mp4
+            rm out.mp4
+            $EXEC -d vectors/out_ref.mp4 out.h264
+            cmp ./out.h264 vectors/foreman.264
+            rm out.h264
+            $EXEC -d vectors/out_sequential_ref.mp4 out.h264
+            cmp ./out.h264 vectors/foreman.264
+            rm out.h264
+            $EXEC -d vectors/out_slices_ref.mp4 out.h264
+            cmp ./out.h264 vectors/foreman_slices.264
+            rm out.h264
+          }
+          test_executable ./minimp4_x86
+          echo "All legacy tests passed"
