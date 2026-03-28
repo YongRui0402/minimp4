@@ -1,5 +1,7 @@
 # minimp4 維護接管計畫
 
+[English version](MAINTENANCE_PLAN_en.md)
+
 ## 背景
 
 minimp4 是一個極簡、header-only 的 C 語言 MP4 mux/demux 函式庫，原始專案為 [lieff/minimp4](https://github.com/lieff/minimp4)，目前已停止維護。本計畫的目標是接手維護這個專案，透過四個階段逐步建立完善的基礎設施，最終成為該專案的活躍維護版本。

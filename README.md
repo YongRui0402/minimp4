@@ -7,6 +7,8 @@ Minimal, embeddable MP4 mux/demux library in a single C header file.
 
 This is an actively maintained fork of [lieff/minimp4](https://github.com/lieff/minimp4).
 
+**English** | [中文](README_zh-TW.md)
+
 ## Features
 
 - **Header-only** — single file `minimp4.h`, just include and go
