@@ -69,7 +69,7 @@ See `docs/MAINTENANCE_PLAN.md` for the complete 4-phase maintenance plan.
 
 ## Current Progress
 
-**Phase 1: Automated Testing Infrastructure — IN PROGRESS**
+**Phase 1: Automated Testing Infrastructure — COMPLETE**
 
 - [x] Step 0: Prerequisites (cmake, gh, clang, lcov, ffmpeg installed; permissions configured)
 - [x] Step 1: Create `CMakeLists.txt` (root + tests/), include legacy test target
@@ -82,7 +82,7 @@ See `docs/MAINTENANCE_PLAN.md` for the complete 4-phase maintenance plan.
 - [x] Step 8: Add coverage reporting to CI (83.5% line coverage achieved)
 - [x] Step 9: Add fuzz targets (fuzz_demux + fuzz_mux_nal with libFuzzer)
 - [x] Step 10: Generate HEVC test vectors + `test_hevc.c` (3 bugs fixed: SEI skip, hvcC demux, hvc1 sample entry)
-- [ ] Step 11: Remove `.travis.yml`
+- [x] Step 11: Remove `.travis.yml` (replaced by GitHub Actions CI)
 
 **After each step**: update this checklist, ensure build + tests pass, then commit.
 
