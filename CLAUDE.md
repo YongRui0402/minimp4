@@ -101,13 +101,13 @@ See `docs/MAINTENANCE_PLAN.md` for the complete 4-phase maintenance plan.
 - [x] Step 4: Cherry-pick accepted changes (PR #46 compiler warnings applied)
 - [x] Step 5: Fix accepted upstream bugs (#50 heap overflow, #42 bounds check; #41/#48/#18/#14 evaluated as not-bugs; #33/#15/#25 deferred)
 
-**Phase 4: Project Infrastructure — IN PROGRESS**
+**Phase 4: Project Infrastructure — COMPLETE**
 
 - [x] Step 1: Update README.md
 - [x] Step 2: Create CONTRIBUTING.md
 - [x] Step 3: Create issue/PR templates
 - [x] Step 4: Set GitHub topics and description
-- [ ] Step 5: Create initial release tag v0.1.0
+- [x] Step 5: Create initial release tag v0.1.0
 
 ## Known Bugs (remaining)
 
