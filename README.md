@@ -1,7 +1,7 @@
 # minimp4
 
 [![CI](https://github.com/YongRui0402/minimp4/actions/workflows/ci.yml/badge.svg)](https://github.com/YongRui0402/minimp4/actions/workflows/ci.yml)
-[![License: CC0](https://img.shields.io/badge/License-CC0_1.0-lightgrey.svg)](https://creativecommons.org/publicdomain/zero/1.0/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 Minimal, embeddable MP4 mux/demux library in a single C header file.
 
@@ -132,4 +132,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ## License
 
-[CC0 1.0 Universal](LICENSE) — Public Domain
+[MIT License](LICENSE)

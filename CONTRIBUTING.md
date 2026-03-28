@@ -73,4 +73,4 @@ PRs are reviewed with a combination of:
 
 ## License
 
-By contributing, you agree that your contributions will be released under the [CC0 1.0 Universal](LICENSE) license (public domain).
+By contributing, you agree that your contributions will be released under the [MIT License](LICENSE).
