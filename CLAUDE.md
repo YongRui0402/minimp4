@@ -109,11 +109,21 @@ See `docs/MAINTENANCE_PLAN.md` for the complete 4-phase maintenance plan.
 - [x] Step 4: Set GitHub topics and description
 - [ ] Step 5: Create initial release tag v0.1.0
 
-## Known Bugs (to fix during Phase 1)
+## Known Bugs (remaining)
 
 1. `minimp4_test.c:70` — read_callback underflow: `buf->size - offset - size`
-2. `minimp4.h:1542` — hvcC box hardcodes profile/level instead of parsing from HEVC SPS
+2. `minimp4.h:1533` — hvcC box hardcodes profile/level instead of parsing from HEVC SPS
 3. `minimp4.h:764` — `minimp4_vector_grow` integer overflow in `capacity*2 + 1024`
 4. Multiple places — missing NULL check after malloc
-5. `minimp4.h:2486` — switch fallthrough without explicit annotation
-6. `minimp4.h:3242` — `MP4D_frame_offset` no bounds check on ntrack/nsample
+5. `minimp4.h` — switch fallthrough without explicit annotation in minimp4_read
+
+### Fixed bugs
+
+- VPS memory leak in MP4E_close (Phase 1)
+- HEVC SEI/AUD NAL rejection in muxer (Phase 1)
+- Missing hvcC demux handler (Phase 1)
+- hvcC overread causing sample_count=0 (Phase 1)
+- Dead code `next_dsi` removed (Phase 3, PR #46)
+- Compiler warnings cleanup (Phase 3, PR #46)
+- Integer overflow in stsz/stts/stsc/stco malloc (Phase 3, #50)
+- MP4D_frame_offset bounds check on ntrack/nsample (Phase 3, #42)
