@@ -1,0 +1,42 @@
+#!/bin/bash
+# Pre-commit hook for minimp4
+# Install: cp scripts/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+#
+# Checks:
+# 1. Build succeeds
+# 2. All tests pass
+# 3. No compiler warnings (-Wall -Wextra)
+
+set -e
+
+echo "=== pre-commit: building ==="
+cmake -B build-check -DCMAKE_C_FLAGS="-Wall -Wextra -Werror -Wno-unused-parameter -Wno-sign-compare" > /dev/null 2>&1
+cmake --build build-check > /dev/null 2>&1
+
+echo "=== pre-commit: running tests ==="
+ctest --test-dir build-check --output-on-failure > /dev/null 2>&1
+
+echo "=== pre-commit: checking for common issues ==="
+
+# Check staged .c/.h files for common problems
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '\.(c|h)$' || true)
+
+if [ -n "$STAGED_FILES" ]; then
+    # Check for malloc without NULL check (simple heuristic)
+    for file in $STAGED_FILES; do
+        if grep -n 'malloc(' "$file" | grep -v 'if\|!\|NULL\|assert\|test_\|fuzz_' > /dev/null 2>&1; then
+            echo "WARNING: $file may have malloc() without NULL check"
+        fi
+    done
+
+    # Check for TODO/FIXME (informational)
+    for file in $STAGED_FILES; do
+        TODOS=$(grep -cn 'TODO\|FIXME\|HACK\|XXX' "$file" 2>/dev/null || echo "0")
+        if [ "$TODOS" -gt 0 ]; then
+            echo "INFO: $file has $TODOS TODO/FIXME comments"
+        fi
+    done
+fi
+
+rm -rf build-check
+echo "=== pre-commit: all checks passed ==="
