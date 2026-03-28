@@ -89,7 +89,7 @@ See `docs/MAINTENANCE_PLAN.md` for the complete 4-phase maintenance plan.
 - [x] Step 1: CLAUDE.md created (done in Phase 1 prerequisites)
 - [x] Step 2: .claude/settings.local.json configured (done in Phase 1 prerequisites)
 - [x] Step 3: AI PR review GitHub Action (`.github/workflows/ai-review.yml`)
-- [ ] Step 4: AI Issue triage scheduled action
+- [x] Step 4: AI Issue triage action (`.github/workflows/issue-triage.yml`)
 - [ ] Step 5: Pre-commit hooks for code quality
 - [ ] Step 6: Release automation (tag → changelog → gh release)
 

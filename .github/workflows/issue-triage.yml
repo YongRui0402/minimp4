@@ -1,0 +1,110 @@
+name: Issue Triage
+
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  issues: write
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Label and triage new issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const title = (issue.title || '').toLowerCase();
+            const body = (issue.body || '').toLowerCase();
+            const text = title + ' ' + body;
+
+            const labels = [];
+            let category = '';
+
+            // Detect bug reports
+            const bugPatterns = ['bug', 'crash', 'segfault', 'memory leak', 'undefined behavior',
+                                 'broken', 'error', 'fail', 'wrong', 'incorrect', 'corrupt',
+                                 'asan', 'ubsan', 'overflow', 'underflow', 'null pointer'];
+            if (bugPatterns.some(p => text.includes(p))) {
+              labels.push('bug');
+              category = 'Bug Report';
+            }
+
+            // Detect feature requests
+            const featurePatterns = ['feature', 'request', 'enhancement', 'add support',
+                                     'would be nice', 'suggestion', 'proposal', 'new'];
+            if (featurePatterns.some(p => text.includes(p))) {
+              labels.push('enhancement');
+              category = category || 'Feature Request';
+            }
+
+            // Detect questions
+            const questionPatterns = ['how to', 'how do', 'question', 'help', 'usage',
+                                      'example', 'documentation', 'tutorial', '?'];
+            if (questionPatterns.some(p => text.includes(p))) {
+              labels.push('question');
+              category = category || 'Question';
+            }
+
+            // Detect HEVC-related issues
+            if (['hevc', 'h265', 'h.265', 'hvc1', 'hvcc'].some(p => text.includes(p))) {
+              labels.push('hevc');
+            }
+
+            // Detect build/CI issues
+            if (['build', 'compile', 'cmake', 'msvc', 'gcc', 'clang', 'ci', 'github actions'].some(p => text.includes(p))) {
+              labels.push('build');
+            }
+
+            // Apply labels if any detected
+            if (labels.length > 0) {
+              // Ensure labels exist
+              for (const label of labels) {
+                try {
+                  await github.rest.issues.getLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    name: label,
+                  });
+                } catch {
+                  const colors = {
+                    bug: 'd73a4a', enhancement: 'a2eeef', question: 'd876e3',
+                    hevc: '0075ca', build: 'e4e669'
+                  };
+                  await github.rest.issues.createLabel({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    name: label,
+                    color: colors[label] || 'ededed',
+                  });
+                }
+              }
+
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                labels: labels,
+              });
+            }
+
+            // Post triage comment
+            if (!category) category = 'Uncategorized';
+            const comment = [
+              `### :robot: Auto-triage: **${category}**`,
+              '',
+              `Labels applied: ${labels.length > 0 ? labels.map(l => '`' + l + '`').join(', ') : '_none_'}`,
+              '',
+              'Thank you for opening this issue! A maintainer will review it shortly.',
+              '',
+              '*This is an automated response. If the classification is incorrect, please update the labels manually.*',
+            ].join('\n');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              body: comment,
+            });
