@@ -97,8 +97,8 @@ See `docs/MAINTENANCE_PLAN.md` for the complete 4-phase maintenance plan.
 
 - [x] Step 1: Add upstream remote and fetch (we are 16 commits ahead, 0 behind)
 - [x] Step 2: Catalog all issues/PRs into `docs/upstream-review.md` (35 issues, 14 PRs reviewed)
-- [ ] Step 3: Review each item against acceptance criteria
-- [ ] Step 4: Cherry-pick accepted changes, add tests, merge via PR
+- [x] Step 3: Review each item against acceptance criteria (done in Step 2)
+- [x] Step 4: Cherry-pick accepted changes (PR #46 compiler warnings applied)
 - [ ] Step 5: Comment on original repo issues pointing to our fixes
 
 ## Known Bugs (to fix during Phase 1)

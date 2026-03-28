@@ -9,7 +9,7 @@ Tracking document for reviewing issues and PRs from the original [lieff/minimp4]
 | # | Title | State | Decision | Rationale | Our Action |
 |---|-------|-------|----------|-----------|------------|
 | 45 | Fixed memory leak (missing free for vvps) | OPEN | already-fixed | We fixed this independently in Phase 1 Step 4 | - |
-| 46 | Clean up compiler warnings except fallthrough | OPEN | review | Addresses #31, compiler warnings cleanup | evaluate |
+| 46 | Clean up compiler warnings except fallthrough | OPEN | accept | Addresses #31, compiler warnings cleanup | applied |
 | 36 | Add an SLConfigDescriptor to the ES_Descriptor | OPEN | defer | Adds ~30 lines for AAC spec compliance, needs testing | evaluate |
 | 35 | Add methods for manual flushing and changing write offset | OPEN | reject | Adds non-minimal API surface, breaks header-only simplicity | - |
 | 34 | Add function to find sync frames and store avc1 codec info | OPEN | defer | Large addition (~100+ lines), extends API beyond core mux/demux | evaluate |
