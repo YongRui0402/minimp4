@@ -77,7 +77,7 @@ See `docs/MAINTENANCE_PLAN.md` for the complete 4-phase maintenance plan.
 - [x] Step 3: Create `.github/workflows/ci.yml` (legacy tests + CMake build)
 - [x] Step 4: Write `test_mux_api.c` + `test_demux_api.c`
 - [x] Step 5: Write `test_integration.c` (replace shell cmp tests)
-- [ ] Step 6: Write `test_nal_parsing.c` + `test_bit_reader.c` + `test_h26x_writer.c`
+- [x] Step 6: Write `test_nal_parsing.c` + `test_bit_reader.c` + `test_h26x_writer.c`
 - [ ] Step 7: Write `test_edge_cases.c` + `test_vector_util.c`
 - [ ] Step 8: Add coverage reporting to CI
 - [ ] Step 9: Add fuzz targets
