@@ -79,7 +79,7 @@ See `docs/MAINTENANCE_PLAN.md` for the complete 4-phase maintenance plan.
 - [x] Step 5: Write `test_integration.c` (replace shell cmp tests)
 - [x] Step 6: Write `test_nal_parsing.c` + `test_bit_reader.c` + `test_h26x_writer.c`
 - [x] Step 7: Write `test_edge_cases.c` + `test_vector_util.c`
-- [ ] Step 8: Add coverage reporting to CI
+- [x] Step 8: Add coverage reporting to CI (83.5% line coverage achieved)
 - [ ] Step 9: Add fuzz targets
 - [ ] Step 10: Generate HEVC test vectors + `test_hevc.c`
 - [ ] Step 11: Remove `.travis.yml`

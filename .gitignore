@@ -4,4 +4,6 @@ qemu-prof
 *.mp4
 *.gcda
 *.gcno
-*.gcovbuild/
+*.gcov
+build/
+build-cov/
