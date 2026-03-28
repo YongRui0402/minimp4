@@ -760,14 +760,16 @@ static void minimp4_vector_reset(minimp4_vector_t *h)
 static int minimp4_vector_grow(minimp4_vector_t *h, int bytes)
 {
     void *p;
-    int new_size = h->capacity*2 + 1024;
-    if (new_size < h->capacity + bytes)
-        new_size = h->capacity + bytes + 1024;
+    size_t new_size = (size_t)h->capacity * 2 + 1024;
+    if (new_size < (size_t)h->capacity + bytes)
+        new_size = (size_t)h->capacity + bytes + 1024;
+    if (new_size < (size_t)h->capacity) // overflow check
+        return 0;
     p = realloc(h->data, new_size);
     if (!p)
         return 0;
     h->data = (unsigned char*)p;
-    h->capacity = new_size;
+    h->capacity = (int)new_size;
     return 1;
 }
 
@@ -2477,10 +2479,10 @@ static unsigned minimp4_read(MP4D_demux_t *mp4, int nb, int *eof_flag)
     uint32_t v = 0; int last_byte;
     switch (nb)
     {
-    case 4: v = (v << 8) | minimp4_fgets(mp4);
-    case 3: v = (v << 8) | minimp4_fgets(mp4);
-    case 2: v = (v << 8) | minimp4_fgets(mp4);
-    default:
+    case 4: v = (v << 8) | minimp4_fgets(mp4); /* fallthrough */
+    case 3: v = (v << 8) | minimp4_fgets(mp4); /* fallthrough */
+    case 2: v = (v << 8) | minimp4_fgets(mp4); /* fallthrough */
+    default: /* fallthrough */
     case 1: v = (v << 8) | (last_byte = minimp4_fgets(mp4));
     }
     if (last_byte < 0)
@@ -2865,9 +2867,14 @@ broken_android_meta_hack:
 #if MP4D_TIMESTAMPS_SUPPORTED
                     if (k + sc > ts_count)
                     {
+                        void *tmp;
                         ts_count = k + sc;
-                        tr->timestamp = (unsigned int*)realloc(tr->timestamp, (size_t)ts_count * sizeof(unsigned));
-                        tr->duration  = (unsigned int*)realloc(tr->duration,  (size_t)ts_count * sizeof(unsigned));
+                        tmp = realloc(tr->timestamp, (size_t)ts_count * sizeof(unsigned));
+                        if (!tmp) { ERROR("out of memory"); }
+                        tr->timestamp = (unsigned int*)tmp;
+                        tmp = realloc(tr->duration, (size_t)ts_count * sizeof(unsigned));
+                        if (!tmp) { ERROR("out of memory"); }
+                        tr->duration = (unsigned int*)tmp;
                     }
                     for (j = 0; j < sc; j++)
                     {

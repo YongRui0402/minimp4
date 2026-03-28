@@ -67,7 +67,7 @@ typedef struct
 static int read_callback(int64_t offset, void *buffer, size_t size, void *token)
 {
     INPUT_BUFFER *buf = (INPUT_BUFFER*)token;
-    size_t to_copy = MINIMP4_MIN(size, buf->size - offset - size);
+    size_t to_copy = ((size_t)offset + size <= buf->size) ? size : 0;
     memcpy(buffer, buf->buffer + offset, to_copy);
     return to_copy != size;
 }

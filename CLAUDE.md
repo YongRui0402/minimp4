@@ -111,11 +111,7 @@ See `docs/MAINTENANCE_PLAN.md` for the complete 4-phase maintenance plan.
 
 ## Known Bugs (remaining)
 
-1. `minimp4_test.c:70` — read_callback underflow: `buf->size - offset - size`
-2. `minimp4.h:1533` — hvcC box hardcodes profile/level instead of parsing from HEVC SPS
-3. `minimp4.h:764` — `minimp4_vector_grow` integer overflow in `capacity*2 + 1024`
-4. Multiple places — missing NULL check after malloc
-5. `minimp4.h` — switch fallthrough without explicit annotation in minimp4_read
+1. `minimp4.h:1533` — hvcC box hardcodes profile/level instead of parsing from HEVC SPS
 
 ### Fixed bugs
 
@@ -127,3 +123,7 @@ See `docs/MAINTENANCE_PLAN.md` for the complete 4-phase maintenance plan.
 - Compiler warnings cleanup (Phase 3, PR #46)
 - Integer overflow in stsz/stts/stsc/stco malloc (Phase 3, #50)
 - MP4D_frame_offset bounds check on ntrack/nsample (Phase 3, #42)
+- read_callback integer underflow in minimp4_test.c (v0.2.0)
+- minimp4_vector_grow integer overflow (v0.2.0)
+- switch fallthrough annotations in minimp4_read (v0.2.0)
+- Unchecked realloc in stts timestamp parsing (v0.2.0)
