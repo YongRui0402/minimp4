@@ -364,17 +364,7 @@ Step 5  ─── 在原始 repo 相關 issue 下留言指向我們的修復
 - **MINOR**（x.1.0）：新功能（不破壞 API）
 - **MAJOR**（1.0.0）：破壞性 API 變更
 
-### 4.5 引流策略（延後）
-
-> 以下步驟延後至專案更完整時再執行，避免在未準備好的狀態下通知外部人員。
-
-- 在 lieff/minimp4 開 issue 宣佈維護 fork
-- 回覆原始 repo 的 open issues
-- 聯繫依賴專案更新指向
-- 提交至 package managers
-- 社群推廣（Reddit、Hacker News 等）
-
-### 4.6 執行順序
+### 4.5 執行順序
 
 ```
 Step 1  ─── 更新 README.md
@@ -382,11 +372,7 @@ Step 2  ─── 建立 CONTRIBUTING.md
 Step 3  ─── 建立 issue/PR templates
 Step 4  ─── 設定 GitHub topics 與 description
 Step 5  ─── 建立初始 release tag v0.1.0
-（以下延後）
-Step 6  ─── 在 lieff/minimp4 發布宣佈 issue
-Step 7  ─── 回覆原始 repo 相關 open issues
-Step 8  ─── 聯繫依賴專案維護者
-Step 9  ─── 社群推廣文章
+Step 6  ─── 回覆原始 repo 已修復的 open issues
 ```
 
 ---
