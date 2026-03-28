@@ -362,26 +362,15 @@ Step 5  ─── 在原始 repo 相關 issue 下留言指向我們的修復
 - **MINOR**（x.1.0）：新功能（不破壞 API）
 - **MAJOR**（1.0.0）：破壞性 API 變更
 
-### 4.5 引流策略
+### 4.5 引流策略（延後）
 
-#### 直接方式
+> 以下步驟延後至專案更完整時再執行，避免在未準備好的狀態下通知外部人員。
 
-1. **在 lieff/minimp4 開 issue** — 禮貌宣佈維護 fork
-   - 附具體證據：CI 截圖、測試覆蓋率、已修復的 bug 列表
-   - 感謝原作者的工作
-2. **回覆原始 repo 的 open issues** — 標註「已在維護 fork 修復」並附連結
-3. **聯繫依賴專案** — 如 `darkskygit/minimp4.rs`，建議更新 upstream 指向
-4. **Package managers** — 若有 Conan/vcpkg 等套件，提交更新
-
-#### SEO / 可發現性
-
-1. **GitHub Topics**：`mp4`, `h264`, `h265`, `hevc`, `aac`, `muxer`, `demuxer`, `header-only`, `c-library`, `multimedia`
-2. **GitHub Description**：清晰描述，包含關鍵詞
-3. **GitHub Releases**：正式 release 提升搜尋排名
-4. **社群推廣**：
-   - Reddit r/programming、r/C_Programming
-   - Hacker News
-   - C 語言相關論壇/Discord
+- 在 lieff/minimp4 開 issue 宣佈維護 fork
+- 回覆原始 repo 的 open issues
+- 聯繫依賴專案更新指向
+- 提交至 package managers
+- 社群推廣（Reddit、Hacker News 等）
 
 ### 4.6 執行順序
 
@@ -391,6 +380,7 @@ Step 2  ─── 建立 CONTRIBUTING.md
 Step 3  ─── 建立 issue/PR templates
 Step 4  ─── 設定 GitHub topics 與 description
 Step 5  ─── 建立初始 release tag v0.1.0
+（以下延後）
 Step 6  ─── 在 lieff/minimp4 發布宣佈 issue
 Step 7  ─── 回覆原始 repo 相關 open issues
 Step 8  ─── 聯繫依賴專案維護者
@@ -406,11 +396,11 @@ Week 1  ── Phase 1a ── CMake + test harness + GitHub Actions CI（基本
 Week 2  ── Phase 1b ── test_mux_api + test_demux_api + test_integration
 Week 3  ── Phase 1c ── test_nal_parsing + test_bit_reader + test_edge_cases
 Week 4  ── Phase 1d ── Coverage + fuzz + HEVC vectors
-        ── Phase 4a ── README + CONTRIBUTING + templates + v0.1.0
 Week 5  ── Phase 2  ── CLAUDE.md + AI review + AI triage + release automation
 Week 6  ── Phase 3  ── Upstream review + cherry-pick + 測試
-Week 7  ── Phase 4b ── 宣佈 + 社群推廣 + v0.2.0
-Week 8+ ── 持續維護 ── Bug 修復、HEVC 改善、社群互動、定期 release
+Week 7  ── Phase 4a ── README + CONTRIBUTING + templates + v0.1.0
+Week 8+ ── 持續維護 ── Bug 修復、HEVC 改善、定期 release
+（引流推廣延後至專案完整後執行）
 ```
 
 ---
@@ -454,5 +444,4 @@ lcov --capture --directory build-cov --output-file coverage.info
 - README 包含所有預定章節
 - Issue/PR templates 可正常使用
 - `v0.1.0` release 已建立
-- lieff/minimp4 上的宣佈 issue 已發布
 - GitHub topics 已設定
